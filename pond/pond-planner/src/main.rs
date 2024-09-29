@@ -34,7 +34,7 @@ struct QueryPlanner {
 #[derive(Default)]
 struct DistributedPlan {
     table: String,
-    group_column: Option<String>,
+    group_column: String,
     agg_function: String,
     partitions: Vec<String>,
 }

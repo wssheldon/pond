@@ -1,4 +1,4 @@
-name: Rust CI
+name: Rust
 
 on:
   push:
@@ -20,9 +20,9 @@ jobs:
           profile: minimal
           toolchain: stable
           override: true
-      - uses: actions-rs/cargo@v1
-        with:
-          command: check
+      - name: Run cargo check
+        working-directory: ./pond
+        run: cargo check
 
   test:
     name: Test Suite
@@ -34,9 +34,9 @@ jobs:
           profile: minimal
           toolchain: stable
           override: true
-      - uses: actions-rs/cargo@v1
-        with:
-          command: test
+      - name: Run cargo test
+        working-directory: ./pond
+        run: cargo test
 
   fmt:
     name: Rustfmt
@@ -49,10 +49,9 @@ jobs:
           toolchain: stable
           override: true
       - run: rustup component add rustfmt
-      - uses: actions-rs/cargo@v1
-        with:
-          command: fmt
-          args: --all -- --check
+      - name: Run cargo fmt
+        working-directory: ./pond
+        run: cargo fmt --all -- --check
 
   clippy:
     name: Clippy
@@ -65,12 +64,10 @@ jobs:
           toolchain: stable
           override: true
       - run: rustup component add clippy
-      - uses: actions-rs/cargo@v1
-        with:
-          command: clippy
-          args: -- -D warnings
+      - name: Run cargo clippy
+        working-directory: ./pond
+        run: cargo clippy -- -D warnings
 
-  # Optional: Add coverage reporting
   coverage:
     name: Code coverage
     runs-on: ubuntu-latest
@@ -81,15 +78,17 @@ jobs:
           profile: minimal
           toolchain: stable
           override: true
-      - uses: actions-rs/cargo@v1
-        with:
-          command: test
-          args: --no-fail-fast
+      - name: Run tests with coverage
+        working-directory: ./pond
+        run: |
+          cargo test --no-fail-fast
         env:
           CARGO_INCREMENTAL: "0"
           RUSTFLAGS: "-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off -Cpanic=abort -Zpanic_abort_tests"
           RUSTDOCFLAGS: "-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off -Cpanic=abort -Zpanic_abort_tests"
       - uses: actions-rs/grcov@v0.1
+        with:
+          config: ./pond/.github/grcov.yml
       - uses: codecov/codecov-action@v3
         with:
           file: ${{ steps.coverage.outputs.report }}

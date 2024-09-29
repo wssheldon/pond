@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-arrow = { version = "*", features = ["ipc"] }
+arrow = { version = "52.0.0", features = ["ipc"] }
 duckdb = { version = "^1.0.0", features = ["bundled"] }
 lambda_http = { version = "0.13.0", default-features = false, features = [
     "apigw_http",
