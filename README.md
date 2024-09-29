@@ -23,5 +23,5 @@ cargo lambda watch
 ```
 
 ```bash
-cargo lambda invoke --data-ascii '{"query": "SELECT * FROM read_parquet('\''https://shell.duckdb.org/data/tpch/0_01/parquet/customer.parquet'\'') LIMIT 3"}' --output-format json
+cargo lambda invoke pond-planner --data-ascii '{"query": "SELECT COUNT(*) FROM read_parquet('\''https://shell.duckdb.org/data/tpch/0_01/parquet/customer.parquet'\'') WHERE c_name LIKE '\''Customer%'\'' GROUP BY customer "}' --output-format json
 ```

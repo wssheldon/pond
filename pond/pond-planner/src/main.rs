@@ -36,6 +36,7 @@ struct DistributedPlan {
     table: String,
     group_column: String,
     agg_function: String,
+    where_clause: Option<Expr>,
     partitions: Vec<String>,
 }
 
@@ -59,13 +60,13 @@ impl QueryPlanner {
         if let Statement::Query(query) = &ast[0] {
             let Query { body, .. } = query.as_ref();
             if let SetExpr::Select(select) = body.as_ref() {
-                let select = select.as_ref();
                 let Select {
                     projection,
                     from,
+                    selection,
                     group_by,
                     ..
-                } = select;
+                } = select.as_ref();
 
                 let table_name = &from[0].relation.to_string();
 
@@ -88,7 +89,8 @@ impl QueryPlanner {
                         return Err("Unsupported aggregation".into());
                     };
 
-                // In a real scenario, determine partitions based on data distribution
+                let where_clause = selection.clone();
+
                 let partitions = vec![
                     "A".to_string(),
                     "B".to_string(),
@@ -100,6 +102,7 @@ impl QueryPlanner {
                     table: table_name.clone(),
                     group_column,
                     agg_function,
+                    where_clause,
                     partitions,
                 })
             } else {
@@ -118,6 +121,7 @@ impl QueryPlanner {
                 "table": plan.table,
                 "group_column": plan.group_column,
                 "agg_function": plan.agg_function,
+                "where_clause": plan.where_clause.as_ref().map(|expr| expr.to_string()),
                 "partition": partition
             });
 
@@ -128,7 +132,7 @@ impl QueryPlanner {
             let req = self
                 .lambda_client
                 .invoke()
-                .function_name("worker-lambda")
+                .function_name("pond-duckling")
                 .invocation_type(InvocationType::RequestResponse)
                 .payload(blob);
 
