@@ -1,2 +1,3 @@
 [workspace]
 members = ["pond-planner", "pond-duckling"]
+resolver = "2"

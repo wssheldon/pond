@@ -78,18 +78,12 @@ jobs:
           profile: minimal
           toolchain: stable
           override: true
-      - name: Run tests with coverage
+      - name: Install tarpaulin
+        run: cargo install cargo-tarpaulin
+      - name: Run cargo tarpaulin
         working-directory: ./pond
-        run: |
-          cargo test --no-fail-fast
-        env:
-          CARGO_INCREMENTAL: "0"
-          RUSTFLAGS: "-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off -Cpanic=abort -Zpanic_abort_tests"
-          RUSTDOCFLAGS: "-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off -Cpanic=abort -Zpanic_abort_tests"
-      - uses: actions-rs/grcov@v0.1
+        run: cargo tarpaulin --out Xml
+      - name: Upload to codecov.io
+        uses: codecov/codecov-action@v3
         with:
-          config: ./pond/.github/grcov.yml
-      - uses: codecov/codecov-action@v3
-        with:
-          file: ${{ steps.coverage.outputs.report }}
           fail_ci_if_error: true
