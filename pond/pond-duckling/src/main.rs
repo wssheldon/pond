@@ -1,6 +1,7 @@
 use arrow::ipc::writer::StreamWriter;
 use arrow::record_batch::RecordBatch;
 use duckdb::Connection;
+use http::StatusCode;
 use lambda_runtime::tracing;
 use lambda_runtime::{run, service_fn, Error, LambdaEvent};
 use serde::{Deserialize, Serialize};
@@ -18,7 +19,6 @@ struct ArrowIpcResponse {
     headers: serde_json::Value,
     #[serde(with = "serde_bytes")]
     body: Vec<u8>,
-    is_base64_encoded: bool,
 }
 
 async fn function_handler(event: LambdaEvent<Request>) -> Result<ArrowIpcResponse, Error> {
@@ -45,12 +45,11 @@ async fn function_handler(event: LambdaEvent<Request>) -> Result<ArrowIpcRespons
 
     // Return the custom response
     Ok(ArrowIpcResponse {
-        status_code: 200,
+        status_code: StatusCode::OK.as_u16(),
         headers: json!({
             "Content-Type": "application/vnd.apache.arrow.stream",
         }),
         body: buffer.into_inner(),
-        is_base64_encoded: true,
     })
 }
 
