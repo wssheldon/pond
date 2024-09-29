@@ -1,0 +1,17 @@
+[package]
+name = "pond-planner"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+lambda_runtime = "0.12.0"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+tokio = { version = "1.0", features = ["macros"] }
+sqlparser = "0.51.0"
+datafusion = { version = "42.0.0", features = ["parquet"] }
+arrow = { version = "*", features = ["ipc"] }
+aws-sdk-lambda = "1.49.0"
+aws-config = "1.5.7"
+futures = "0.3.30"
+serde_bytes = "0.11.15"
