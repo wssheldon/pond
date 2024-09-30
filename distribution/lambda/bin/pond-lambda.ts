@@ -3,11 +3,13 @@ import * as cdk from "aws-cdk-lib";
 import { PondLambdaStack } from "../lib/pond-lambda-stack";
 
 const app = new cdk.App();
+const useLocalStack = app.node.tryGetContext("use_local_stack") === true;
+
 new PondLambdaStack(app, "PondLambdaStack", {
-  /* If you don't specify 'env', this stack will be environment-agnostic.
-   * Account/Region-dependent features and context lookups will not work,
-   * but a single synthesized template can be deployed anywhere. */
-  /* Uncomment the next line to specialize this stack for the AWS Account
-   * and Region that are implied by the current CLI configuration. */
-  // env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION },
+  env: useLocalStack
+    ? { account: "000000000000", region: "us-east-1" }
+    : {
+        account: process.env.CDK_DEFAULT_ACCOUNT,
+        region: process.env.CDK_DEFAULT_REGION,
+      },
 });

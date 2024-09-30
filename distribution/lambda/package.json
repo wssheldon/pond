@@ -10,12 +10,17 @@
     "test": "jest",
     "cdk": "cdk",
     "build:lambda": "cd $(git rev-parse --show-toplevel)/pond/pond-planner && cargo lambda build --release && cd $(git rev-parse --show-toplevel)/pond/pond-duckling && cargo lambda build --release",
-    "deploy": "npm run build:lambda && npm run build && cdk deploy"
+    "deploy": "npm run build:lambda && npm run build && cdk deploy",
+    "start:localstack": "docker run --rm -it -p 4566:4566 -p 4571:4571 localstack/localstack",
+    "cdk-local": "cdklocal",
+    "deploy:local": "npm run build:lambda && npm run build && cdklocal deploy",
+    "destroy:local": "cdklocal destroy"
   },
   "devDependencies": {
     "@types/jest": "^29.5.5",
     "@types/node": "^20.16.10",
-    "aws-cdk": "2.100.0",
+    "aws-cdk": "^2.100.0",
+    "aws-cdk-local": "^2.18.0",
     "esbuild": "^0.24.0",
     "jest": "^29.7.0",
     "ts-jest": "^29.1.1",
