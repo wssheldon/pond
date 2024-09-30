@@ -21,6 +21,18 @@ struct ArrowIpcResponse {
     body: Vec<u8>,
 }
 
+fn convert_to_arrow_ipc(rbs: &[RecordBatch]) -> Result<Vec<u8>, Error> {
+    let mut buffer = Cursor::new(Vec::new());
+    {
+        let mut writer = StreamWriter::try_new(&mut buffer, &rbs[0].schema())?;
+        for batch in rbs {
+            writer.write(batch)?;
+        }
+        writer.finish()?;
+    }
+    Ok(buffer.into_inner())
+}
+
 async fn function_handler(event: LambdaEvent<Request>) -> Result<ArrowIpcResponse, Error> {
     let query = event.payload.query.unwrap_or_else(||
         "SELECT * FROM read_parquet('https://shell.duckdb.org/data/tpch/0_01/parquet/customer.parquet') LIMIT 5".to_string()
@@ -33,15 +45,8 @@ async fn function_handler(event: LambdaEvent<Request>) -> Result<ArrowIpcRespons
     let mut stmt = conn.prepare(&query)?;
     let rbs: Vec<RecordBatch> = stmt.query_arrow([])?.collect();
 
-    // Serialize RecordBatches to Arrow IPC format
-    let mut buffer = Cursor::new(Vec::new());
-    {
-        let mut writer = StreamWriter::try_new(&mut buffer, &rbs[0].schema())?;
-        for batch in &rbs {
-            writer.write(batch)?;
-        }
-        writer.finish()?;
-    }
+    // Convert RecordBatches to Arrow IPC format
+    let arrow_ipc_data = convert_to_arrow_ipc(&rbs)?;
 
     // Return the custom response
     Ok(ArrowIpcResponse {
@@ -49,7 +54,7 @@ async fn function_handler(event: LambdaEvent<Request>) -> Result<ArrowIpcRespons
         headers: json!({
             "Content-Type": "application/vnd.apache.arrow.stream",
         }),
-        body: buffer.into_inner(),
+        body: arrow_ipc_data,
     })
 }
 
