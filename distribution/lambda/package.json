@@ -9,12 +9,12 @@
     "watch": "tsc -w",
     "test": "jest",
     "cdk": "cdk",
-    "deploy": "npm run build:lambda && cdk deploy",
-    "build:lambda": "cargo lambda build --release --manifest-path ../../pond/pond-planner/Cargo.toml && cargo lambda build --release --manifest-path ../../pond/pond-duckling/Cargo.toml"
+    "build:lambda": "cd $(git rev-parse --show-toplevel)/pond/pond-planner && cargo lambda build --release && cd $(git rev-parse --show-toplevel)/pond/pond-duckling && cargo lambda build --release",
+    "deploy": "npm run build:lambda && npm run build && cdk deploy"
   },
   "devDependencies": {
     "@types/jest": "^29.5.5",
-    "@types/node": "20.7.1",
+    "@types/node": "^20.16.10",
     "aws-cdk": "2.100.0",
     "esbuild": "^0.24.0",
     "jest": "^29.7.0",

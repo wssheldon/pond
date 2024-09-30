@@ -2,6 +2,7 @@ import * as cdk from "aws-cdk-lib";
 import { Construct } from "constructs";
 import * as lambda from "aws-cdk-lib/aws-lambda";
 import * as path from "path";
+import { getAssetPath } from "./utils";
 
 export class PondLambdaStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -11,10 +12,7 @@ export class PondLambdaStack extends cdk.Stack {
       runtime: lambda.Runtime.PROVIDED_AL2,
       handler: "bootstrap",
       code: lambda.Code.fromAsset(
-        path.join(
-          __dirname,
-          "../../pond/pond-planner/target/lambda/pond-planner/",
-        ),
+        getAssetPath("pond", "target", "lambda", "pond-planner"),
       ),
       memorySize: 128,
       timeout: cdk.Duration.seconds(30),
@@ -24,10 +22,7 @@ export class PondLambdaStack extends cdk.Stack {
       runtime: lambda.Runtime.PROVIDED_AL2,
       handler: "bootstrap",
       code: lambda.Code.fromAsset(
-        path.join(
-          __dirname,
-          "../../pond/pond-duckling/target/lambda/pond-duckling/",
-        ),
+        getAssetPath("pond", "target", "lambda", "pond-duckling"),
       ),
       memorySize: 128,
       timeout: cdk.Duration.seconds(30),
