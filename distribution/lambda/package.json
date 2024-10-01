@@ -7,12 +7,13 @@
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",
-    "test": "jest",
+    "test": "jest --config jest.config.ts",
     "cdk": "cdk",
     "build:lambda": "cd $(git rev-parse --show-toplevel)/pond/pond-planner && cargo lambda build --release && cd $(git rev-parse --show-toplevel)/pond/pond-duckling && cargo lambda build --release",
     "deploy": "npm run build:lambda && npm run build && cdk deploy",
     "start:localstack": "docker run --rm -it -p 4566:4566 -p 4571:4571 localstack/localstack",
     "cdk-local": "cdklocal",
+    "bootstrap:local": "cdklocal bootstrap",
     "deploy:local": "npm run build:lambda && npm run build && cdklocal deploy",
     "destroy:local": "cdklocal destroy"
   },

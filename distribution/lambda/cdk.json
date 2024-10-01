@@ -9,6 +9,7 @@
       "**/*.js",
       "tsconfig.json",
       "package*.json",
+      "jest.config.js",
       "yarn.lock",
       "node_modules",
       "test"
